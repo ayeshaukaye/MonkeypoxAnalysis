@@ -127,9 +127,46 @@ elif page == "Understand the Model":
                 
     st.subheader("How do models understand text?")
     st.markdown("""
-Basic Linear Models (like the ones used here) cannot understand text directly. Text must be converted to numbers for the model to be able to process it.
-                
-##### How's that done?
+Basic linear models (like the ones used here) **cannot understand raw text directly**.  
+Text must first be **converted into numbers** so a model can process it mathematically.
+
+
+### How is text converted?
+
+We use **text vectorizers** to transform text into **numerical representations**.
+
+The vectorizer used here is **TF-IDF** (Term Frequency–Inverse Document Frequency).  
+TF-IDF assumes that the most useful information about a document comes from words that:
+
+- Appear **frequently within that document**, but  
+- Appear **less frequently across other documents**.
+
+For example, an article about *mental health* might contain the word *stress* many times — but that word might not appear as often in other articles.  
+TF-IDF captures this by weighing terms accordingly.  
+The log factor in TF-IDF penalizes words that appear **too frequently as well as too rarely**, effectively highlighting the words that matter the most.
+
+
+### Our text is numeric — now what?
+
+Once the text is converted, it becomes **feature data** that can be used to **train models**.
+
+**The models used here:**
+
+- **Logistic Regression:** A simple, popular model for binary classification, well suited for text tasks.
+- **Naive Bayes:** A fast, baseline model that assumes each word is independent of the others. (This is a simplification — in reality, words do relate to each other, but Naive Bayes often performs well anyway.)
+- **Linear SVC (Support Vector Classifier):** Very effective for **high-dimensional** data like text, as it finds the optimal *hyperplane* that best separates the classes.
+
+
+### ⚖️ About class imbalance
+
+The dataset used here has **more “No Stress” posts** than “Stress” posts, creating a **class imbalance**.  
+Because of this, we also show **adjusted accuracy** (balanced accuracy) to account for the imbalance and give a fairer view of how each model performs.
+
+
+### ✅ Results
+
+Below you’ll see each model’s performance on the test set, along with an explanation of how it made its predictions.
+
 
 
 
