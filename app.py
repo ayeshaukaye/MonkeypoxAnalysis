@@ -187,6 +187,40 @@ Below you’ll see each model’s performance on the test set, along with an exp
 
     st.pyplot(fig)
 
+    st.subheader('Model Comparison - F1 Score')
+
+    f1_lr, f1_mb, f1_cb, f1_svc = joblib.load("f1_scores.pkl")
+
+    labels = sorted(set(y_test))
+    x = range(len(labels))
+    width = 0.2 
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    ax.bar([i - 1.5 * width for i in x], f1_lr, width=width, label='Logistic Regression', color='skyblue')
+    ax.bar([i - 0.5 * width for i in x], f1_mb, width=width, label='Multinomial NB', color='salmon')
+    ax.bar([i + 0.5 * width for i in x], f1_cb, width=width, label='Complement NB', color='violet')
+    ax.bar([i + 1.5 * width for i in x], f1_svc, width=width, label='Linear SVC', color='lightgreen')
+
+    #value labels
+    for idx, scores in zip([-1.5, -0.5, 0.5, 1.5], [f1_lr, f1_mb, f1_cb, f1_svc]):
+        for i, score in zip(x, scores):
+            ax.text(i + idx * width, score + 0.01, f"{score:.2f}", ha='center', fontsize=8)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.set_ylabel('F1-Score')
+    ax.set_title('F1-Score per Class — Model Comparison')
+    ax.legend(loc=4) #lower right
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+    fig.tight_layout()
+
+    st.pyplot(fig)
+
+    st.markdown("""
+The effects of the class imbalance are clear in this chart, as the models are not able to learn as much about stress posts due to less data rows for that category.
+    """)
+
 # Combine all text
 text = " ".join(stress_posts["text"])
 
