@@ -49,7 +49,7 @@ sampled_stress = stress_posts.sample(n=4, random_state=23)
 # Combine and shuffle
 final_posts = pd.concat([sampled_no_stress, sampled_stress]).sample(frac=1, random_state=42).reset_index(drop=True)
 
-page = st.sidebar.radio("Choose a page", ["Understand the Model", "Detect Stress"])
+page = st.sidebar.radio("Choose a page", ["Detect Stress", "Understand the Model"])
 
 if page == "Detect Stress":
     # expander + model chooser code
@@ -70,8 +70,8 @@ if page == "Detect Stress":
     - The color shows whether each word *increases* or *decreases* the chance of “Stress”.
 
     **2. Look at the colors**  
-    - 🟥 **Red  words** push the score **away from the displayed prediction**.
-    - 🟩 **Green words** push the score **toward the displayed prediction**.
+    - :red[Red  words] push the score **away from the displayed prediction**.
+    - :green[Green words] push the score **toward the displayed prediction**.
     - A stronger color indicates a stronger influence.
 
     **3. Word weights**  
@@ -80,7 +80,7 @@ if page == "Detect Stress":
 
     ---
 
-    🛑 If a word you expect isn’t highlighted, it may not have much impact in this model.
+    **If a word you expect isn’t highlighted, it may not have much impact in this model.**
     """)
 
     st.subheader('Choose a post below:')
@@ -162,7 +162,7 @@ Once the text is converted, it becomes **feature data** that can be used to **tr
 - **Linear SVC (Support Vector Classifier):** Very effective for **high-dimensional** data like text, as it finds the optimal *hyperplane* that best separates the classes.
 
 
-### ⚖️ About class imbalance
+### About class imbalance
 
 The dataset used here has **more “No Stress” posts** than “Stress” posts, creating a **class imbalance**.  
 Because of this, I've also showed **adjusted accuracy** (balanced accuracy) to account for the imbalance and give a fairer view of how each model performs.
@@ -226,7 +226,7 @@ st.markdown("""
   This means important context and nuance is lost.
 
 - As a result, words that don’t actually signal stress can still affect predictions.  
-  For example, in post 5 (see other page), the word *“written”* had a positive weight (+0.18) toward a **“Stress detected”** result, even though it’s irrelevant.  
+  For example, in post 5, the word *“written”* had a positive weight (+0.18) toward a **“Stress detected”** result, even though it’s irrelevant.  
   This highlights how simple frequency-based weighting can produce misleading signals.
 
 ---
