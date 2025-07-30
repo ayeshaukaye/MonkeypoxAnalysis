@@ -14,6 +14,7 @@ from wordcloud import WordCloud
 import nltk
 nltk.download('punkt')
 nltk.download('wordnet')
+nltk.download('punkt_tab')
 
 le = joblib.load("label_encoder.pkl")
 
