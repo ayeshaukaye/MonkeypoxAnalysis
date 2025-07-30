@@ -2,6 +2,10 @@ import re
 from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
+import nltk
+nltk.download('punkt')
+nltk.download('wordnet')
+
 wnl = WordNetLemmatizer()
 
 def custom_cleaner(X):

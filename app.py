@@ -11,6 +11,10 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score
 from clean_util import custom_cleaner
 from wordcloud import WordCloud
 
+import nltk
+nltk.download('punkt')
+nltk.download('wordnet')
+
 le = joblib.load("label_encoder.pkl")
 
 lr_pipe = joblib.load("lr_pipeline.pkl")
@@ -61,7 +65,7 @@ if page == "Detect Stress":
                     
     ---
     **1.  Words are highlighted in color**  
-    - Highlighted words are the ones the model found *important* in your text.
+    - Highlighted words are the ones the model found *important* in the text.
     - The color shows whether each word *increases* or *decreases* the chance of “Stress”.
 
     **2. Look at the colors**  
@@ -106,7 +110,7 @@ if page == "Detect Stress":
 
 elif page == "Understand the Model":
     
-    st.subheader("idk smthnnn")
+    # st.subheader("idk smthnnn")
     st.markdown(""" The goal of this web app is to demonstrate how a simple NLP classifer works in a non technical manner. I will attempt to
                 explain how these models were built, what happens in the background and the limitations of using linear models for NLP tasks.
     """)
@@ -160,16 +164,12 @@ Once the text is converted, it becomes **feature data** that can be used to **tr
 ### ⚖️ About class imbalance
 
 The dataset used here has **more “No Stress” posts** than “Stress” posts, creating a **class imbalance**.  
-Because of this, we also show **adjusted accuracy** (balanced accuracy) to account for the imbalance and give a fairer view of how each model performs.
+Because of this, I've also showed **adjusted accuracy** (balanced accuracy) to account for the imbalance and give a fairer view of how each model performs.
 
 
-### ✅ Results
+### Results
 
 Below you’ll see each model’s performance on the test set, along with an explanation of how it made its predictions.
-
-
-
-
     """)
 
     st.subheader('Test Set Accuracies')
@@ -186,36 +186,54 @@ Below you’ll see each model’s performance on the test set, along with an exp
 
     st.pyplot(fig)
 
+# Combine all text
+text = " ".join(stress_posts["text"])
 
+# remove irrelevant
+text = text.replace("Monkeypox", "")
+text = text.replace("monkeypox", "")
+text = text.replace("mpox", "")
+text = text.replace("Mpox", "")
+text = text.replace("virus", "")
 
-    # Combine all text
-    text = " ".join(stress_posts["text"])
+# Create word cloud
+wordcloud = WordCloud(
+    width=800,
+    height=400,
+    background_color='white',
+    max_words=150
+).generate(text)
+# wordcloud.to_file("wordcloud3.png")
 
-    # remove irrelevant
-    text = text.replace("Monkeypox", "")
-    text = text.replace("monkeypox", "")
-    text = text.replace("mpox", "")
-    text = text.replace("Mpox", "")
-    text = text.replace("virus", "")
+st.subheader("Word Cloud for Stress Posts")
+st.image("wordcloud3.png")
 
-    # Create word cloud
-    wordcloud = WordCloud(
-        width=800,
-        height=400,
-        background_color='white',
-        max_words=150
-    ).generate(text)
-    # wordcloud.to_file("wordcloud3.png")
+with st.expander("View Explanation"):
+    st.markdown("The wordcloud displays the most commonly found words in stress posts.")
+    st.markdown("""
+                These include words like **`outbreak`, `spread`, `case`, `health emergency`** and **`international concern`** which are clear indicators of an emotionally charged post, 
+                that focuses on the global spread of the disease and reflects feelings of stress or anxiety. 
 
-    st.subheader("Word Cloud for Stress Posts")
-    st.image("wordcloud3.png")
+                Do note: since this is a basic linear model, it simply looks at each word seperately, not as parts of a whole.
+                Hence the model's limitations lie in the fact that it cannot learn from context and may miss certain nuances of the text.
+                """)
 
-    with st.expander("View Explanation"):
-        st.markdown("The wordcloud displays the most commonly found words in stress posts.")
-        st.markdown("""
-                    These include words like **`outbreak`, `spread`, `case`, `health emergency`** and **`international concern`** which are clear indicators of an emotionally charged post, 
-                    that focuses on the global spread of the disease and reflects feelings of stress or anxiety. 
+st.markdown("""
+### Limitations
 
-                    Do note: since this is a basic linear model, it simply looks at each word seperately, not as parts of a whole.
-                    Hence the model's limitations lie in the fact that it cannot learn from context and may miss certain nuances of the text.
-                    """)
+- The current **TF-IDF vectorizer** does not capture relationships between words or their order.  
+  This means important context and nuance is lost.
+
+- As a result, words that don’t actually signal stress can still affect predictions.  
+  For example, in post 5 (see other page), the word *“written”* had a positive weight (+0.18) toward a **“Stress detected”** result, even though it’s irrelevant.  
+  This highlights how simple frequency-based weighting can produce misleading signals.
+
+---
+
+### Future improvements
+
+- Use a lightweight **transformer-based model** like **DistilBERT**, which captures word meaning **in context**, allowing the same word to have different meanings depending on surrounding words.
+
+- Explore **semantic vectorizers** like **Word2Vec** or **Sentence-BERT**, which learn **dense embeddings** that better reflect the relationships between words and phrases.
+
+""")
