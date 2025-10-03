@@ -1,7 +1,7 @@
 # Monkeypox Analysis - Streamlit Application
-A Streamlit application designed as a Monkeypox Sentiment Classifier.
+A Streamlit application designed as a Monkeypox Stress Classifier.
 
-Built using several ML pipelines to detect sentiment in social media posts, and deployed for non-technical audience use and prediction explainability.
+Built using several ML pipelines to detect stress in social media posts using NLP techniques, and deployed for non-technical audience use and prediction explainability.
 
 ## Built With
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -21,26 +21,27 @@ https://monkeypoxanalysis.streamlit.app/
  - URLs and special characters were removed using `re` module
  - Each post's content was then tokenized and lemmatized
 ### 3. Model Pipelines
- - Called cleaner function created in step 2 on each row
- - Used `TfidfVectorizer` to vectorize the text data
- - Called classifier function
- - Created pipelines for each of the 4 models, trained on data and saved models as `.pkl` files
+ - The pre-processing function (from step 2) was applied to the data
+ - The cleaned text was vectorized using `TfidfVectorizer` (configured to use bigrams, remove English stop words, and select the top 5,000 features)
+ - Logistic Regression, Naive Bayes, and SVC models were trained and evaluated on the vectorized data
+ - A Scikit-learn `Pipeline` was created for each model, combining the text-cleaning, TF-IDF vectorization, and classifier steps
+ -  Trained models were saved as `.pkl` files for deployment
 
-``` def make_pipeline(clf, tfidf_vectorizer=None):
-    if tfidf_vectorizer is None:
-        tfidf_vectorizer = TfidfVectorizer(
-            max_features=5000, stop_words='english', lowercase=True, ngram_range=(1, 2)
-        )
+``` 
     return Pipeline([
         ('cleaner', cleaner),
         ('tfidf', TfidfVectorizer(max_features=5000, stop_words='english', lowercase=True, ngram_range=(1, 2))),
         ('clf', clf)
     ])
 ```
-### 4. Implement in streamlit & explain predictions
- - When user presses the `Predict Stress` button, the SVC model predicts stress for the particular post
- - `eli5` showcases the most deterministic words that pushed the result 
+<img width="930" height="612" alt="image" src="https://github.com/user-attachments/assets/473119c9-941c-438f-a241-c9bd18c66e45" />
 
+### 4. Implement in streamlit & explain predictions
+ - Loaded the SVC model (chosen for its high performance after hyperparameter tuning and comparison with Naive Bayes/Logistic Regression) 
+ - When user presses the `Predict Stress` button, the SVC model predicts stress for the particular post
+ - `eli5` showcases the most deterministic words that contributed to the final result 
+<img width="691" height="467" alt="image" src="https://github.com/user-attachments/assets/fa24f397-15bb-4b13-8e67-26ac673b9e55" />
+<img width="767" height="726" alt="image" src="https://github.com/user-attachments/assets/a6d7ac11-ef12-4f30-ad6a-34ca90e15ae4" />
 
 ## Roadmap
 
